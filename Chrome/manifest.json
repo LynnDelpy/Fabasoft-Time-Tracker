@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Fabasoft Time Tracker",
+  "version": "1.0",
+  "description": "Tracks your total time in Fabasoft Cloud, plus the time wasted waiting for the busy indicator",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.fabasoft.com/*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.fabasoft.com/*"
+      ],
+      "js": ["shared.js", "content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Fabasoft Time Tracker"
+  },
+  "options_page": "settings.html",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

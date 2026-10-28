@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="settingsPageTitle">Fabasoft Wasted Time Tracker - Settings</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      width: 600px;
+      padding: 20px;
+    }
+    .settings-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    .settings-section:last-child {
+      border-bottom: none;
+    }
+    .setting-item {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    input[type="file"] {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      resize: vertical;
+    }
+    select {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .setting-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+    .sound-preview {
+      margin-top: 10px;
+    }
+    .sound-preview audio {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    .file-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 data-i18n="settingsButton">⚙️ Settings</h1>
+
+    <div class="settings-section">
+      <h2 data-i18n="general">General</h2>
+
+      <div class="setting-item">
+        <label for="language" data-i18n="language">Language</label>
+        <select id="language">
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 data-i18n="notifications">Notifications</h2>
+
+      <div class="setting-item">
+        <input type="checkbox" id="soundEnabled" />
+        <label for="soundEnabled" data-i18n="soundEnabled">Play a sound when the busy indicator appears</label>
+      </div>
+
+      <div id="soundSettings" style="display: none; margin-left: 30px;">
+        <label for="soundFile" data-i18n="chooseSoundFile">Choose an MP3 file:</label>
+        <input type="file" id="soundFile" accept="audio/mp3,.mp3" />
+        <div id="currentSound" class="file-info"></div>
+        <div class="sound-preview">
+          <audio id="soundPreview" controls style="display: none;"></audio>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 data-i18n="dataManagement">Data management</h2>
+
+      <div class="setting-item">
+        <button id="exportBtn" class="btn btn-primary" data-i18n="exportData">📥 Export data</button>
+      </div>
+
+      <div class="setting-item">
+        <button id="importBtn" class="btn btn-primary" data-i18n="importData">📤 Import data</button>
+        <input type="file" id="importFile" accept=".json" style="display: none;" />
+      </div>
+
+      <div class="setting-item">
+        <button id="resetAllBtn" class="btn btn-secondary" style="background-color: #ff6b6b;" data-i18n="deleteAllData">🗑️ Delete all data</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 data-i18n="leaderboard">Leaderboard</h2>
+
+      <div class="setting-item">
+        <input type="checkbox" id="leaderboardEnabled" />
+        <label for="leaderboardEnabled" data-i18n="enableLeaderboard">Enable leaderboard</label>
+      </div>
+      <span class="hint" style="margin-left: 30px; display: block; margin-bottom: 10px;" data-i18n="leaderboardHint">Shows the leaderboard in the popup and uploads your stats to the server.</span>
+
+      <div id="leaderboardSettings" style="margin-left: 30px;">
+        <div class="setting-item setting-col">
+          <label for="leaderboardUsername" data-i18n="displayName">Display name</label>
+          <input type="text" id="leaderboardUsername" placeholder="Your name on the leaderboard" data-i18n-placeholder="displayNamePlaceholder" maxlength="50" />
+        </div>
+
+        <div class="setting-item setting-col">
+          <label for="leaderboardServer" data-i18n="serverUrl">Server URL</label>
+          <input type="text" id="leaderboardServer" placeholder="https://your-leaderboard.example" />
+        </div>
+
+        <div class="setting-item">
+          <button id="saveLeaderboardBtn" class="btn btn-primary" data-i18n="saveLeaderboard">Save leaderboard settings</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h2 data-i18n="detection">Detection</h2>
+
+      <div class="setting-item setting-col">
+        <label for="customSelectors" data-i18n="customSelectors">Busy indicator elements (CSS selectors, one per line)</label>
+        <textarea id="customSelectors" rows="2"></textarea>
+        <span class="hint" data-i18n="customSelectorsHint">CSS selector of the Fabasoft loading spinner. Right-click it while it shows, Inspect, and copy the class. Leave empty to track total time only.</span>
+      </div>
+
+      <div class="setting-item">
+        <button id="saveDetectionBtn" class="btn btn-primary" data-i18n="saveDetection">Save detection settings</button>
+      </div>
+      <span class="hint" data-i18n="reloadHint">Reload open Fabasoft tabs to apply changes.</span>
+    </div>
+
+    <div id="message" style="margin-top: 20px; padding: 10px; border-radius: 4px; display: none;"></div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script src="i18n.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>

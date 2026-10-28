@@ -1,0 +1,165 @@
+// UI translations for the popup and settings page
+
+const TRANSLATIONS = {
+  en: {
+    appTitle: '⏱️ Fabasoft Time Tracker',
+    bannerBefore: '⚠️ No display name set — go to ',
+    bannerLink: 'Settings',
+    bannerAfter: ' to join the leaderboard.',
+    todayOnSapLabel: 'Time on Fabasoft Today',
+    totalOnSapLabel: 'Time on Fabasoft Total',
+    todayLabel: 'Wasted Time Today',
+    totalLabel: 'Wasted Time Total',
+    metricOnSap: 'On Fabasoft',
+    metricWasted: 'Wasted',
+    statusOnSap: 'On Fabasoft',
+    statusNotOnSap: 'Not on Fabasoft',
+    busyIndicatorVisible: '⚠️ Busy indicator visible',
+    dailyStats: 'Daily Stats',
+    last7Days: 'Last 7 days',
+    last14Days: 'Last 14 days',
+    last30Days: 'Last 30 days',
+    lastYear: 'Last year',
+    allTime: 'All time',
+    leaderboard: 'Leaderboard',
+    refresh: 'Refresh',
+    loading: 'Loading...',
+    lbNoServer: 'No leaderboard server set — add one in Settings.',
+    lbUnreachable: 'Leaderboard server is unreachable.',
+    lbEmpty: 'No entries yet — be the first!',
+    lbError: 'Could not reach leaderboard server.',
+    lbYou: 'you',
+    resetToday: 'Reset Today',
+    settingsButton: '⚙️ Settings',
+    coffee: 'Buy me a Coffee ☕',
+    confirmResetToday: "Reset today's stats?",
+
+    settingsPageTitle: 'Fabasoft Time Tracker - Settings',
+    general: 'General',
+    language: 'Language',
+    notifications: 'Notifications',
+    soundEnabled: 'Play a sound when the busy indicator appears',
+    chooseSoundFile: 'Choose an MP3 file:',
+    currentFile: 'Current file: {name}',
+    dataManagement: 'Data management',
+    exportData: '📥 Export data',
+    importData: '📤 Import data',
+    deleteAllData: '🗑️ Delete all data',
+    enableLeaderboard: 'Enable leaderboard',
+    leaderboardHint: 'Shows the leaderboard in the popup and uploads your stats to the server.',
+    displayName: 'Display name',
+    displayNamePlaceholder: 'Your name on the leaderboard',
+    serverUrl: 'Server URL',
+    saveLeaderboard: 'Save leaderboard settings',
+    detection: 'Detection',
+    customUrls: 'Custom URLs (one per line)',
+    customUrlsHint: '* matches anything. Replaces the default list — leave empty to use the default.',
+    customSelectors: 'Busy indicator elements (CSS selectors, one per line)',
+    customSelectorsHint: 'CSS selector of the Fabasoft loading spinner. Right-click it while it shows, Inspect, and copy the class. Leave empty to track total time only.',
+    saveDetection: 'Save detection settings',
+    reloadHint: 'Reload open Fabasoft tabs to apply changes.',
+    msgSettingsSaved: 'Settings saved',
+    msgChooseAudio: 'Please choose an audio file',
+    msgSoundSaved: 'Sound file saved',
+    msgExported: 'Data exported',
+    msgImported: 'Data imported successfully',
+    msgImportFailed: 'Import failed: {error}',
+    msgInvalidFormat: 'Invalid data format',
+    confirmDeleteAll: 'Do you really want to delete ALL data? This cannot be undone.',
+    msgAllDeleted: 'All data has been deleted',
+    msgSaved: 'Saved',
+    msgLeaderboardSaved: 'Leaderboard settings saved',
+    msgDetectionSaved: 'Detection settings saved'
+  },
+  de: {
+    appTitle: '⏱️ Fabasoft Zeit-Tracker',
+    bannerBefore: '⚠️ Kein Anzeigename gesetzt — legen Sie in den ',
+    bannerLink: 'Einstellungen',
+    bannerAfter: ' einen fest, um an der Rangliste teilzunehmen.',
+    todayOnSapLabel: 'Heute in Fabasoft',
+    totalOnSapLabel: 'Insgesamt in Fabasoft',
+    todayLabel: 'Heute verschwendet',
+    totalLabel: 'Insgesamt verschwendet',
+    metricOnSap: 'In Fabasoft',
+    metricWasted: 'Verschwendet',
+    statusOnSap: 'In Fabasoft',
+    statusNotOnSap: 'Nicht in Fabasoft',
+    busyIndicatorVisible: '⚠️ Ladeanzeige sichtbar',
+    dailyStats: 'Tägliche Statistik',
+    last7Days: 'Letzte 7 Tage',
+    last14Days: 'Letzte 14 Tage',
+    last30Days: 'Letzte 30 Tage',
+    lastYear: 'Letztes Jahr',
+    allTime: 'Gesamter Zeitraum',
+    leaderboard: 'Rangliste',
+    refresh: 'Aktualisieren',
+    loading: 'Wird geladen...',
+    lbNoServer: 'Kein Ranglisten-Server gesetzt — tragen Sie einen in den Einstellungen ein.',
+    lbUnreachable: 'Der Ranglisten-Server ist nicht erreichbar.',
+    lbEmpty: 'Noch keine Einträge — seien Sie der Erste!',
+    lbError: 'Der Ranglisten-Server konnte nicht erreicht werden.',
+    lbYou: 'Sie',
+    resetToday: 'Heute zurücksetzen',
+    settingsButton: '⚙️ Einstellungen',
+    coffee: 'Spendieren Sie mir einen Kaffee ☕',
+    confirmResetToday: 'Die heutigen Statistiken zurücksetzen?',
+
+    settingsPageTitle: 'Fabasoft Time Tracker - Einstellungen',
+    general: 'Allgemein',
+    language: 'Sprache',
+    notifications: 'Benachrichtigungen',
+    soundEnabled: 'Sound abspielen, wenn die Ladeanzeige erscheint',
+    chooseSoundFile: 'MP3-Datei auswählen:',
+    currentFile: 'Aktuelle Datei: {name}',
+    dataManagement: 'Datenverwaltung',
+    exportData: '📥 Daten exportieren',
+    importData: '📤 Daten importieren',
+    deleteAllData: '🗑️ Alle Daten löschen',
+    enableLeaderboard: 'Rangliste aktivieren',
+    leaderboardHint: 'Zeigt die Rangliste im Popup an und lädt Ihre Statistiken auf den Server hoch.',
+    displayName: 'Anzeigename',
+    displayNamePlaceholder: 'Ihr Name in der Rangliste',
+    serverUrl: 'Server-URL',
+    saveLeaderboard: 'Ranglisten-Einstellungen speichern',
+    detection: 'Erkennung',
+    customUrls: 'Eigene URLs (eine pro Zeile)',
+    customUrlsHint: '* steht für beliebige Zeichen. Ersetzt die Standardliste — leer lassen für den Standard.',
+    customSelectors: 'Ladeanzeige-Elemente (CSS-Selektoren, einer pro Zeile)',
+    customSelectorsHint: 'CSS-Selektor der Fabasoft-Ladeanzeige. Rechtsklick auf den Spinner, Untersuchen, Klasse kopieren. Leer lassen, um nur die Gesamtzeit zu zählen.',
+    saveDetection: 'Erkennungs-Einstellungen speichern',
+    reloadHint: 'Laden Sie offene Fabasoft-Tabs neu, um die Änderungen zu übernehmen.',
+    msgSettingsSaved: 'Einstellungen gespeichert',
+    msgChooseAudio: 'Bitte wählen Sie eine Audio-Datei aus',
+    msgSoundSaved: 'Sound-Datei gespeichert',
+    msgExported: 'Daten exportiert',
+    msgImported: 'Daten erfolgreich importiert',
+    msgImportFailed: 'Fehler beim Importieren: {error}',
+    msgInvalidFormat: 'Ungültiges Datenformat',
+    confirmDeleteAll: 'Möchten Sie wirklich ALLE Daten löschen? Dies kann nicht rückgängig gemacht werden.',
+    msgAllDeleted: 'Alle Daten wurden gelöscht',
+    msgSaved: 'Gespeichert',
+    msgLeaderboardSaved: 'Ranglisten-Einstellungen gespeichert',
+    msgDetectionSaved: 'Erkennungs-Einstellungen gespeichert'
+  }
+};
+
+let currentLanguage = 'en';
+
+function t(key, params = {}) {
+  const text = TRANSLATIONS[currentLanguage]?.[key] ?? TRANSLATIONS.en[key] ?? key;
+  return text.replace(/\{(\w+)\}/g, (match, name) => (name in params ? params[name] : match));
+}
+
+function applyTranslations() {
+  document.documentElement.lang = currentLanguage;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+}
+
+// Loads the saved language (falling back to the browser language) and translates the page
+async function initLanguage() {
+  const data = await chrome.storage.local.get(['language']);
+  currentLanguage = TRANSLATIONS[data.language] ? data.language : (navigator.language.startsWith('de') ? 'de' : 'en');
+  applyTranslations();
+}

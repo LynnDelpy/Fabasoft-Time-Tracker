@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabasoft Wasted Time Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1 data-i18n="appTitle">⏱️ Wasted Time Tracker</h1>
+
+    <div id="usernameBanner" class="username-banner" style="display:none;">
+      <span class="banner-text"><span data-i18n="bannerBefore">⚠️ No display name set — go to </span><a id="bannerSettingsLink" href="#" data-i18n="bannerLink">Settings</a><span data-i18n="bannerAfter"> to join the leaderboard.</span></span>
+      <button id="bannerDismiss" class="banner-dismiss">✕</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-box stat-active">
+        <h2 data-i18n="todayOnSapLabel">Time on Fabasoft Today</h2>
+        <p class="time" id="activeTodayTime">00:00:00</p>
+      </div>
+
+      <div class="stat-box stat-active">
+        <h2 data-i18n="totalOnSapLabel">Time on Fabasoft Total</h2>
+        <p class="time" id="activeTotalTime">00:00:00</p>
+      </div>
+
+      <div class="stat-box">
+        <h2 data-i18n="todayLabel">Wasted Time Today</h2>
+        <p class="time" id="todayTime">00:00:00</p>
+      </div>
+
+      <div class="stat-box">
+        <h2 data-i18n="totalLabel">Wasted Time Total</h2>
+        <p class="time" id="totalTime">00:00:00</p>
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      <p>Status: <span id="statusText" data-i18n="statusNotOnSap">Not on Fabasoft</span></p>
+      <p id="loadingIndicator" style="display: none; color: #ff6b6b;" data-i18n="busyIndicatorVisible">⚠️ Busy indicator visible</p>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-header">
+        <h2 data-i18n="dailyStats">Daily Stats</h2>
+        <select id="metricSelect" class="timespan-select">
+          <option value="active" data-i18n="metricOnSap">On Fabasoft</option>
+          <option value="wasted" data-i18n="metricWasted">Wasted</option>
+        </select>
+        <select id="timespanSelect" class="timespan-select">
+          <option value="7" data-i18n="last7Days">Last 7 days</option>
+          <option value="14" data-i18n="last14Days">Last 14 days</option>
+          <option value="30" data-i18n="last30Days">Last 30 days</option>
+          <option value="365" data-i18n="lastYear">Last year</option>
+          <option value="all" data-i18n="allTime">All time</option>
+        </select>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="statsChart"></canvas>
+        <div id="chartTooltip" class="chart-tooltip"></div>
+      </div>
+    </div>
+
+    <div id="leaderboardSection" class="leaderboard-section">
+      <div class="leaderboard-header">
+        <h2 data-i18n="leaderboard">Leaderboard</h2>
+        <button id="refreshLeaderboard" class="btn-icon" title="Refresh" data-i18n-title="refresh">↻</button>
+      </div>
+      <div id="leaderboardContent"><p class="lb-info" data-i18n="loading">Loading...</p></div>
+    </div>
+
+    <div class="buttons">
+      <button id="resetTodayBtn" class="btn btn-secondary" data-i18n="resetToday">Reset Today</button>
+      <button id="settingsBtn" class="btn btn-primary" data-i18n="settingsButton">⚙️ Settings</button>
+    </div>
+
+    <div class="coffee-link">
+      <a href="https://buymeacoffee.com/nyyks" target="_blank" data-i18n="coffee">Buy me a Coffee ☕</a>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script src="i18n.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 8px;
+  width: 430px;
+}
+
+.container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+h1 {
+  font-size: 20px;
+  margin-bottom: 14px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+h2 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #34495e;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 6px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-box {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 4px 6px rgba(238, 82, 83, 0.4);
+}
+
+/* Total "time on Fabasoft" boxes are the primary metric */
+.stat-box.stat-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 6px rgba(102, 126, 234, 0.4);
+}
+
+.stat-box h2 {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: none;
+  margin-bottom: 6px;
+  padding-bottom: 0;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.stat-box .time {
+  font-size: 26px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.status {
+  background-color: #ecf0f1;
+  border-left: 4px solid #3498db;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.status p {
+  margin: 4px 0;
+  line-height: 1.3;
+}
+
+#statusText {
+  font-weight: 600;
+  color: #2980b9;
+}
+
+#loadingIndicator {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.chart-section {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.chart-header h2 {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-size: 13px;
+}
+
+.timespan-select {
+  font-size: 11px;
+  padding: 3px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  color: #555;
+  cursor: pointer;
+}
+
+.timespan-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.chart-wrap {
+  position: relative;
+}
+
+#statsChart {
+  display: block;
+  width: 100%;
+}
+
+.chart-tooltip {
+  display: none;
+  position: absolute;
+  background: rgba(44, 62, 80, 0.9);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn {
+  padding: 9px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(149, 165, 166, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.username-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8e1;
+  border-left: 4px solid #f39c12;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  color: #7d5a00;
+}
+
+.banner-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.username-banner a {
+  color: #e67e22;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.username-banner a:hover {
+  text-decoration: underline;
+}
+
+.banner-dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 13px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.banner-dismiss:hover {
+  color: #555;
+}
+
+.leaderboard-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.leaderboard-header h2 {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-size: 13px;
+}
+
+.btn-icon {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 7px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #667eea;
+  line-height: 1.4;
+}
+
+.btn-icon:hover {
+  background: #f0f0f0;
+}
+
+.lb-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.lb-table tr {
+  border-bottom: 1px solid #eee;
+}
+
+.lb-table tr:last-child {
+  border-bottom: none;
+}
+
+.lb-table td {
+  padding: 5px 4px;
+}
+
+.lb-rank {
+  color: #aaa;
+  width: 28px;
+  font-size: 11px;
+}
+
+.lb-name {
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-time {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.lb-me {
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.lb-me .lb-name {
+  font-weight: 600;
+}
+
+.lb-you {
+  background: #667eea;
+  color: white;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 3px;
+}
+
+.lb-sep td {
+  text-align: center;
+  color: #ccc;
+  font-size: 11px;
+  padding: 2px;
+}
+
+.lb-info, .lb-error {
+  font-size: 12px;
+  text-align: center;
+  padding: 8px 0;
+  color: #aaa;
+}
+
+.lb-error {
+  color: #e74c3c;
+}
+
+.coffee-link {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.coffee-link a {
+  font-size: 12px;
+  color: #aaa;
+  text-decoration: none;
+}
+
+.coffee-link a:hover {
+  color: #f39c12;
+}
