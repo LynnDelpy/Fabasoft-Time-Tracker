@@ -6,11 +6,19 @@ const FABASOFT_URL_PATTERNS = [
   'https://*.fabasoft.com/*'
 ];
 
-// The busy indicator — "wasted" time is counted while one of these is visible.
-// Fabasoft's loading overlay is a <div class="FscBusy" role="status"> ("Laden ..."),
-// shown while the client is busy. FscBusy also sits on <body>, so we target the
-// role="status" overlay, not the body. Override under Settings → Detection.
+// Containers of Fabasoft's loading overlay (<div class="FscBusy" role="status">).
+// The container alone is not a busy signal, it can be present while the client is
+// idle: busy needs a shown <div> with the loading text below inside it.
+// Override the containers under Settings → Detection.
 const FABASOFT_SELECTORS = ['.FscBusy[role="status"]'];
+
+// Text of the loading <div>: "Laden ..." in the German UI, "Loading ..." in the English one
+const FABASOFT_BUSY_TEXTS = ['laden', 'loading'];
+
+// Matches "Laden ...", "Loading...", "Loading …" etc., ignoring case and trailing dots
+function isBusyText(text) {
+  return FABASOFT_BUSY_TEXTS.includes(text.trim().replace(/[\s.…]+$/, '').toLowerCase());
+}
 
 // Default leaderboard server (see server/). Empty by default — the leaderboard is
 // off until you self-host a server and enter its URL in Settings.

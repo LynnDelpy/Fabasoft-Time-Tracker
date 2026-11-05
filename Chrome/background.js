@@ -69,14 +69,8 @@ chrome.storage.onChanged.addListener((changes) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'busyStarted') {
-    startBusyTimer();
-  } else if (request.action === 'busyStopped') {
-    stopBusyTimer();
-  } else if (request.action === 'activeStarted') {
-    startActiveTimer();
-  } else if (request.action === 'activeStopped') {
-    stopActiveTimer();
+  if (request.action === 'statusChanged') {
+    evaluate();
   } else if (request.action === 'getServerStatus') {
     sendResponse({ reachable: serverReachable });
   }
@@ -126,7 +120,7 @@ function stopBusyTimer() {
   uploadStats();
 }
 
-// Timer for total time — counts while an Fabasoft tab is in the foreground
+// Timer for total time — counts while the focused tab is a Fabasoft page
 function startActiveTimer() {
   if (activeRunning) return;
   activeRunning = true;
@@ -203,32 +197,57 @@ async function uploadStats() {
 // Periodic upload every 5 minutes while extension is active
 setInterval(uploadStats, 5 * 60 * 1000);
 
-// Polling fallback: catches cases where content script messages are lost
-setInterval(async () => {
-  const tabs = await chrome.tabs.query({ url: FABASOFT_URL_PATTERNS });
+// Time only counts in the Fabasoft tab you are actually using: the active tab of the
+// focused browser window. The extension popup doesn't take window focus, so opening it
+// doesn't pause the counters; switching to another tab, window or app does.
+async function getFocusedStatus() {
+  try {
+    const win = await chrome.windows.getLastFocused();
+    if (!win.focused) return { busy: false, active: false };
+    const [tab] = await chrome.tabs.query({ active: true, windowId: win.id });
+    if (!tab) return { busy: false, active: false };
+    // Only Fabasoft pages answer: the content script runs nowhere else
+    const status = await chrome.tabs.sendMessage(tab.id, { action: 'getStatus' });
+    return { busy: !!status?.isBusy, active: !!status?.isActive };
+  } catch (e) {
+    return { busy: false, active: false };
+  }
+}
 
-  if (tabs.length === 0) {
-    if (busyRunning) stopBusyTimer();
-    if (activeRunning) stopActiveTimer();
+let evaluating = false;
+let evaluateAgain = false;
+
+// Starts or stops both timers to match the focused tab. Calls that arrive while a
+// check is running are folded into one more pass instead of racing it.
+async function evaluate() {
+  if (evaluating) {
+    evaluateAgain = true;
     return;
   }
-
-  let anyBusy = false;
-  let anyActive = false;
-  for (const tab of tabs) {
-    try {
-      const response = await chrome.tabs.sendMessage(tab.id, { action: 'getStatus' });
-      if (response?.isBusy) anyBusy = true;
-      if (response?.isActive) anyActive = true;
-    } catch (e) {}
+  evaluating = true;
+  try {
+    do {
+      evaluateAgain = false;
+      const { busy, active } = await getFocusedStatus();
+      if (busy) startBusyTimer();
+      else if (busyRunning) stopBusyTimer();
+      if (active) startActiveTimer();
+      else if (activeRunning) stopActiveTimer();
+    } while (evaluateAgain);
+  } finally {
+    evaluating = false;
   }
+}
 
-  if (anyBusy && !busyRunning) startBusyTimer();
-  else if (!anyBusy && busyRunning) stopBusyTimer();
+chrome.windows.onFocusChanged.addListener(() => evaluate());
+chrome.tabs.onActivated.addListener(() => evaluate());
+chrome.tabs.onRemoved.addListener(() => evaluate());
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status || changeInfo.url) evaluate();
+});
 
-  if (anyActive && !activeRunning) startActiveTimer();
-  else if (!anyActive && activeRunning) stopActiveTimer();
-}, 2000);
+// Fallback: re-check regularly in case an event or message was missed
+setInterval(evaluate, 2000);
 
 function formatTimeShort(seconds) {
   const hours = Math.floor(seconds / 3600);

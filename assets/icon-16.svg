@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#667eea"/>
+      <stop offset="1" stop-color="#764ba2"/>
+    </linearGradient>
+  </defs>
+  <!-- Toolbar size: solid silhouette on whole pixel rows, no outline or sand stream -->
+  <rect x="0" y="0" width="16" height="16" rx="3.5" fill="url(#bg)"/>
+  <path d="M4 4 H12 L8.75 8 L12 12 H4 L7.25 8 Z" fill="#ffffff"/>
+  <path d="M5.625 6 H10.375 L8.75 8 H7.25 Z" fill="#fbbf24"/>
+  <path d="M5.625 10 H10.375 L12 12 H4 Z" fill="#fbbf24"/>
+  <rect x="3" y="2" width="10" height="2" rx="1" fill="#ffffff"/>
+  <rect x="3" y="12" width="10" height="2" rx="1" fill="#ffffff"/>
+</svg>

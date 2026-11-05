@@ -1,10 +1,9 @@
 // Content script that runs on Fabasoft pages
 
 let wasBusy = false;
-let wasActive = false;
 let audioElement = null;
 
-// Busy indicator selectors: the configurable list from Settings → Detection,
+// Loading overlay containers: the configurable list from Settings → Detection,
 // falling back to the built-in default. Loaded from storage and kept in sync.
 let selectors = FABASOFT_SELECTORS;
 chrome.storage.local.get(['customSelectors']).then((data) => {
@@ -17,49 +16,40 @@ chrome.storage.onChanged.addListener((changes) => {
   }
 });
 
-// A busy indicator counts as visible while it is rendered. getClientRects() is empty
-// for display:none elements, so a toggled overlay only counts while it is shown, and a
-// selector matching a state element (e.g. body[aria-busy="true"]) only matches while busy.
+// Rendered, not hidden via visibility and not fully transparent
+function isShown(el) {
+  if (el.checkVisibility) {
+    return el.checkVisibility({ opacityProperty: true, visibilityProperty: true, checkOpacity: true, checkVisibilityCSS: true });
+  }
+  return el.getClientRects().length > 0;
+}
+
+// Fabasoft is busy while an overlay container holds a shown <div> reading
+// "Laden ..." or "Loading ...". The container on its own does not count.
 function isBusyIndicatorVisible() {
   for (const selector of selectors) {
-    for (const el of document.querySelectorAll(selector)) {
-      if (el.getClientRects().length > 0) {
-        return true;
+    for (const container of document.querySelectorAll(selector)) {
+      for (const div of container.querySelectorAll('div')) {
+        if (isBusyText(div.textContent) && isShown(div)) return true;
       }
     }
   }
   return false;
 }
 
-// The page counts as active while this tab is in the foreground (visible and not minimized).
-// This is what drives the total "time on Fabasoft" counter.
+// The tab counts as active while it is in the foreground. Whether its window has
+// focus is checked by the background script, which sees all windows.
 function isPageActive() {
   return document.visibilityState === 'visible';
 }
 
 function checkAndNotify() {
-  // Busy indicator → "wasted" time spent waiting
-  if (isBusyIndicatorVisible()) {
-    if (!wasBusy) {
-      wasBusy = true;
-      playNotificationSound();
-    }
-    // Resend busyStarted every tick while visible so a missed message doesn't
-    // leave the timer stopped and the service worker gets a keep-alive ping.
-    chrome.runtime.sendMessage({ action: 'busyStarted' }).catch(() => {});
-  } else if (wasBusy) {
-    wasBusy = false;
-    chrome.runtime.sendMessage({ action: 'busyStopped' }).catch(() => {});
-  }
-
-  // Foreground page → total time spent on Fabasoft
-  if (isPageActive()) {
-    wasActive = true;
-    chrome.runtime.sendMessage({ action: 'activeStarted' }).catch(() => {});
-  } else if (wasActive) {
-    wasActive = false;
-    chrome.runtime.sendMessage({ action: 'activeStopped' }).catch(() => {});
-  }
+  const busy = isBusyIndicatorVisible();
+  if (busy && !wasBusy && isPageActive()) playNotificationSound();
+  wasBusy = busy;
+  // Ping every tick: the background decides what to count, and the ping keeps the
+  // service worker alive.
+  chrome.runtime.sendMessage({ action: 'statusChanged' }).catch(() => {});
 }
 
 async function playNotificationSound() {
@@ -81,15 +71,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // React immediately when the user switches to or away from this tab
 document.addEventListener('visibilitychange', checkAndNotify);
-
-window.addEventListener('beforeunload', () => {
-  if (wasBusy) {
-    chrome.runtime.sendMessage({ action: 'busyStopped' }).catch(() => {});
-  }
-  if (wasActive) {
-    chrome.runtime.sendMessage({ action: 'activeStopped' }).catch(() => {});
-  }
-});
 
 setInterval(checkAndNotify, 1000);
 checkAndNotify();
