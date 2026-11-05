@@ -8,7 +8,9 @@ This is a fork of the [SAP Time Tracker](https://github.com/LynnDelpy/SAP-Time-T
 
 ## How it detects things
 
-**On Fabasoft and in focus.** Time only counts in the tab you are actually using: a `*.fabasoft.com` page that is the active tab of the focused browser window. Switching to another tab, another window or another app pauses both counters. Opening the extension popup does not, so you can watch the numbers move.
+**On Fabasoft and in focus.** Time only counts in the tab you are actually using: a `*.fabasoft.com` page that is the active tab of the focused browser window. Switching to another tab, another window or another app pauses both counters. Opening the extension popup does not, so you can watch the numbers move; the popup shows whether it is counting right now (`On Fabasoft · counting` / `paused`).
+
+Because the window focus Chrome reports isn't reliable on every Linux desktop, a Fabasoft tab also counts as focused when the page itself has focus or when the popup is open in its window.
 
 **Loading.** Fabasoft keeps its loading overlay container (`<div class="FscBusy" role="status">`) in the page even when nothing is loading, so the container alone means nothing. Wasted time only counts while that container holds a visible `<div>` with the loading text:
 
@@ -95,6 +97,11 @@ The default overlay container is `.FscBusy[role="status"]`; override it under **
 The icon sources are in `assets/`: `icon.svg` for 48 and 128 px, and `icon-16.svg`, a simplified version drawn on the pixel grid for the toolbar.
 
 ## Changelog
+
+### v1.2
+- Fix: after updating or reloading the extension, Fabasoft tabs that were already open stopped counting until you reloaded them (Chrome leaves them with an orphaned content script). The extension now re-attaches to open Fabasoft tabs on its own
+- Fix: counting no longer depends only on the window focus Chrome reports, which can be wrong on some Linux desktops, especially while the popup is open; page focus and an open popup count too
+- The popup status shows `counting` or `paused`
 
 ### v1.1
 - Wasted time requires the visible `Laden ...` / `Loading ...` text inside the loading overlay (the empty container used to count as loading all the time)

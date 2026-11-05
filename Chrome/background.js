@@ -73,6 +73,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     evaluate();
   } else if (request.action === 'getServerStatus') {
     sendResponse({ reachable: serverReachable });
+  } else if (request.action === 'getTimerStatus') {
+    sendResponse({ active: activeRunning, busy: busyRunning });
   }
 });
 
@@ -197,46 +199,67 @@ async function uploadStats() {
 // Periodic upload every 5 minutes while extension is active
 setInterval(uploadStats, 5 * 60 * 1000);
 
+// Window the extension popup is open in, if any. Looking at the popup means you are
+// still on the Fabasoft tab behind it, so that tab keeps counting even on desktops where
+// the browser reports the window as unfocused while the popup has keyboard focus.
+let popupWindowId = null;
+
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name !== 'popup') return;
+  port.onMessage.addListener((msg) => {
+    popupWindowId = msg.windowId;
+    evaluate().then(() => port.postMessage({ ready: true }));
+  });
+  port.onDisconnect.addListener(() => {
+    popupWindowId = null;
+    evaluate();
+  });
+});
+
 // Time only counts in the Fabasoft tab you are actually using: the active tab of the
-// focused browser window. The extension popup doesn't take window focus, so opening it
-// doesn't pause the counters; switching to another tab, window or app does.
+// last focused browser window, while that window or the page has focus or the popup is
+// open. Switching to another tab, window or app pauses the counters.
 async function getFocusedStatus() {
   try {
     const win = await chrome.windows.getLastFocused();
-    if (!win.focused) return { busy: false, active: false };
     const [tab] = await chrome.tabs.query({ active: true, windowId: win.id });
     if (!tab) return { busy: false, active: false };
     // Only Fabasoft pages answer: the content script runs nowhere else
     const status = await chrome.tabs.sendMessage(tab.id, { action: 'getStatus' });
-    return { busy: !!status?.isBusy, active: !!status?.isActive };
+    // The window focus the browser reports isn't reliable on every Linux desktop, so the
+    // page's own focus and an open popup count as focused too
+    const focused = win.focused || !!status?.hasFocus || win.id === popupWindowId;
+    return { busy: focused && !!status?.isBusy, active: focused && !!status?.isActive };
   } catch (e) {
     return { busy: false, active: false };
   }
 }
 
-let evaluating = false;
+let evaluation = null;
 let evaluateAgain = false;
 
-// Starts or stops both timers to match the focused tab. Calls that arrive while a
-// check is running are folded into one more pass instead of racing it.
-async function evaluate() {
-  if (evaluating) {
+// Starts or stops both timers to match the focused tab. A call that arrives while a
+// check is running schedules one more pass and resolves once that pass is done.
+function evaluate() {
+  if (evaluation) {
     evaluateAgain = true;
-    return;
+    return evaluation;
   }
-  evaluating = true;
-  try {
-    do {
-      evaluateAgain = false;
-      const { busy, active } = await getFocusedStatus();
-      if (busy) startBusyTimer();
-      else if (busyRunning) stopBusyTimer();
-      if (active) startActiveTimer();
-      else if (activeRunning) stopActiveTimer();
-    } while (evaluateAgain);
-  } finally {
-    evaluating = false;
-  }
+  evaluation = (async () => {
+    try {
+      do {
+        evaluateAgain = false;
+        const { busy, active } = await getFocusedStatus();
+        if (busy) startBusyTimer();
+        else if (busyRunning) stopBusyTimer();
+        if (active) startActiveTimer();
+        else if (activeRunning) stopActiveTimer();
+      } while (evaluateAgain);
+    } finally {
+      evaluation = null;
+    }
+  })();
+  return evaluation;
 }
 
 chrome.windows.onFocusChanged.addListener(() => evaluate());
@@ -248,6 +271,24 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 
 // Fallback: re-check regularly in case an event or message was missed
 setInterval(evaluate, 2000);
+
+// Chrome doesn't add content scripts to tabs that were already open when the extension
+// was installed, updated or reloaded. Those tabs keep an orphaned script that can't
+// reach us anymore, so nothing would count until the tab is reloaded. On every start,
+// give each fully loaded Fabasoft tab that doesn't answer a fresh content script.
+async function injectIntoOpenTabs() {
+  const tabs = await chrome.tabs.query({ url: FABASOFT_URL_PATTERNS, status: 'complete' });
+  for (const tab of tabs) {
+    try {
+      await chrome.tabs.sendMessage(tab.id, { action: 'getStatus' });
+    } catch (e) {
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['shared.js', 'content-script.js'] }).catch(() => {});
+    }
+  }
+  evaluate();
+}
+
+injectIntoOpenTabs();
 
 function formatTimeShort(seconds) {
   const hours = Math.floor(seconds / 3600);

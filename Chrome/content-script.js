@@ -37,8 +37,8 @@ function isBusyIndicatorVisible() {
   return false;
 }
 
-// The tab counts as active while it is in the foreground. Whether its window has
-// focus is checked by the background script, which sees all windows.
+// The tab counts as active while it is in the foreground. Focus is decided by the
+// background script, which combines the window focus it sees with document.hasFocus().
 function isPageActive() {
   return document.visibilityState === 'visible';
 }
@@ -65,12 +65,14 @@ async function playNotificationSound() {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getStatus') {
-    sendResponse({ isBusy: isBusyIndicatorVisible(), isActive: isPageActive() });
+    sendResponse({ isBusy: isBusyIndicatorVisible(), isActive: isPageActive(), hasFocus: document.hasFocus() });
   }
 });
 
-// React immediately when the user switches to or away from this tab
+// React immediately when the user switches to or away from this tab or window
 document.addEventListener('visibilitychange', checkAndNotify);
+window.addEventListener('focus', checkAndNotify);
+window.addEventListener('blur', checkAndNotify);
 
 setInterval(checkAndNotify, 1000);
 checkAndNotify();

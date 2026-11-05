@@ -1,5 +1,17 @@
 let chartMeta = null;
 
+// Tell the background the popup is open in this window, so looking at your stats doesn't
+// pause the counter of the Fabasoft tab behind it
+let popupReady = false;
+const popupPort = chrome.runtime.connect({ name: 'popup' });
+popupPort.onMessage.addListener((msg) => {
+  if (msg.ready) {
+    popupReady = true;
+    updateUI();
+  }
+});
+chrome.windows.getCurrent().then((win) => popupPort.postMessage({ windowId: win.id }));
+
 async function updateUI() {
   const data = await chrome.storage.local.get(['todaySeconds', 'totalSeconds', 'activeTodaySeconds', 'activeTotalSeconds']);
 
@@ -17,7 +29,17 @@ async function updateUI() {
     response = await chrome.tabs.sendMessage(currentTab.id, { action: 'getStatus' });
   } catch (e) {}
 
-  document.getElementById('statusText').textContent = t(response ? 'statusOnSap' : 'statusNotOnSap');
+  // On Fabasoft, also show whether the total-time counter is running right now
+  let counting = '';
+  if (response && popupReady) {
+    let timers = null;
+    try {
+      timers = await chrome.runtime.sendMessage({ action: 'getTimerStatus' });
+    } catch (e) {}
+    counting = ` · ${t(timers?.active ? 'statusCounting' : 'statusPaused')}`;
+  }
+
+  document.getElementById('statusText').textContent = t(response ? 'statusOnSap' : 'statusNotOnSap') + counting;
   document.getElementById('loadingIndicator').style.display = response?.isBusy ? 'block' : 'none';
 }
 
