@@ -14,12 +14,15 @@ function urlMatches(url, patterns) {
   });
 }
 
-// A busy indicator counts as visible while it is rendered (offsetParent is null for hidden elements)
+// A busy indicator counts as visible while it is rendered. getClientRects() is empty
+// for display:none elements, so a toggled overlay only counts while it is shown, and a
+// selector matching a state element (e.g. body[aria-busy="true"]) only matches while busy.
 function isBusyIndicatorVisible(selectors) {
   for (const selector of selectors) {
-    const el = document.querySelector(selector);
-    if (el && el.offsetParent !== null) {
-      return true;
+    for (const el of document.querySelectorAll(selector)) {
+      if (el.getClientRects().length > 0) {
+        return true;
+      }
     }
   }
   return false;

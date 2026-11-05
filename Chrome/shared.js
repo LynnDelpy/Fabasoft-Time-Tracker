@@ -7,10 +7,10 @@ const FABASOFT_URL_PATTERNS = [
 ];
 
 // The busy indicator — "wasted" time is counted while one of these is visible.
-// Fabasoft's loading spinner uses a different class than SAP UI5, so there is no
-// reliable default. Left empty (total time still works); set the real selector
-// under Settings → Detection once you have it.
-const FABASOFT_SELECTORS = [];
+// Fabasoft's loading overlay is a <div class="FscBusy" role="status"> ("Laden ..."),
+// shown while the client is busy. FscBusy also sits on <body>, so we target the
+// role="status" overlay, not the body. Override under Settings → Detection.
+const FABASOFT_SELECTORS = ['.FscBusy[role="status"]'];
 
 // Default leaderboard server (see server/). Empty by default — the leaderboard is
 // off until you self-host a server and enter its URL in Settings.

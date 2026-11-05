@@ -6,19 +6,17 @@ It runs on all `*.fabasoft.com` systems (for example `at.cloud.fabasoft.com`, `d
 
 This is a fork of the [SAP Time Tracker](https://github.com/LynnDelpy/SAP-Time-Tracker) adapted for Fabasoft.
 
-## Heads up: the loading spinner selector
+## Loading spinner selector
 
 The **Time on Fabasoft** counter (total time) works out of the box, it only needs the tab to be in the foreground.
 
-The **Wasted Time** counter needs the CSS selector of Fabasoft's loading spinner, and that differs from SAP's. There is no reliable default, so it ships empty and wasted time stays at zero until you set it:
+The **Wasted Time** counter watches Fabasoft's loading overlay. The built-in default is `.FscBusy[role="status"]`, the `<div role="status">` that shows "Laden ..." while the Fabasoft client is busy. If wasted time stays at zero, or climbs continuously so that it equals total time, the overlay on your instance behaves differently. Adjust it without touching code:
 
-1. Open a Fabasoft page and trigger an action that shows the loading spinner.
-2. While the spinner is visible, right-click it and choose **Inspect**.
-3. In the dev tools, read the element's `class` (and its parent if needed).
-4. Open the extension's **Settings → Detection** and paste the CSS selector (for example `.someLoadingClass`), one per line.
+1. Open a Fabasoft page and trigger an action that shows the loading overlay.
+2. While it is visible, right-click it and choose **Inspect**.
+3. Read the element's `class` and `role`.
+4. Open the extension's **Settings → Detection** and paste the CSS selector, one per line. A reliable fallback is `body[aria-busy="true"]`.
 5. Reload the Fabasoft tab.
-
-Once a selector is set, wasted time is counted whenever a matching element is visible. Send the selector to the maintainer and it can become the built-in default.
 
 ## Features
 
@@ -26,7 +24,7 @@ Once a selector is set, wasted time is counted whenever a matching element is vi
 Two independent counters run while you are on a Fabasoft page:
 
 - **Time on Fabasoft** — counts every second the Fabasoft tab is in the foreground (visible). This is your total time spent in the system.
-- **Wasted Time** — counts only the seconds a configured loading spinner is on screen, i.e. the time you spend waiting (off until you set a selector, see above).
+- **Wasted Time** — counts only the seconds Fabasoft's loading overlay is on screen, i.e. the time you spend waiting (see the selector note above).
 
 Each counter keeps a **Today** value (resets at midnight) and a **Total** value (cumulative since installation). A live badge on the extension icon shows the current wasted session time.
 
@@ -89,4 +87,4 @@ Point the extension to your instance in **Settings → Leaderboard → Server UR
 
 ## Detection
 
-The extension checks every second whether a configured loading spinner is rendered. The default list is empty, set it under **Settings → Detection**. On Firefox you can also set custom URLs; on Chrome the tracked URLs are fixed to `*.fabasoft.com` by the manifest.
+The extension checks every second whether a configured loading overlay is rendered. The default selector is `.FscBusy[role="status"]`; override it under **Settings → Detection**. On Firefox you can also set custom URLs; on Chrome the tracked URLs are fixed to `*.fabasoft.com` by the manifest.
