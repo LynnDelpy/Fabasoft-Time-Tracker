@@ -19,7 +19,7 @@ Because the window focus Chrome reports isn't reliable on every Linux desktop, a
 
 A text div that is present but hidden (`display:none`, `visibility:hidden`, fully transparent) does not count. `FscBusy` and `aria-busy="true"` on `<body>` are ignored, they are not reliable signals.
 
-If your instance uses a different overlay container, set its CSS selector under **Settings → Detection** (one per line, empty = default). The loading text check still applies.
+If your instance uses a different overlay container, set its CSS selector under **Settings → Detection** (one per line, empty = default). The loading text check still applies. Entries that aren't valid CSS selectors are refused.
 
 ## Features
 
@@ -97,6 +97,11 @@ The default overlay container is `.FscBusy[role="status"]`; override it under **
 The icon sources are in `assets/`: `icon.svg` for 48 and 128 px, and `icon-16.svg`, a simplified version drawn on the pixel grid for the toolbar.
 
 ## Changelog
+
+### v1.3
+- Fix: Fabasoft tabs stayed "Not on Fabasoft" after updating or reloading the extension. Fabasoft's hidden push iframe keeps a tab "loading" forever, and v1.2 only re-attached to fully loaded tabs. The extension now re-attaches to every open Fabasoft tab, and repairs the focused tab on the fly whenever it stops answering
+- Fix: an invalid entry in **Settings → Detection** (e.g. `<div>Laden ...</div>` instead of a CSS selector) made the tab stop answering entirely. Invalid entries are skipped (the default is used if none are left) and the settings page refuses to save them
+- The popup no longer claims "Not on Fabasoft" on a Fabasoft tab it can't reach; it says `not connected, reload the tab`
 
 ### v1.2
 - Fix: after updating or reloading the extension, Fabasoft tabs that were already open stopped counting until you reloaded them (Chrome leaves them with an orphaned content script). The extension now re-attaches to open Fabasoft tabs on its own

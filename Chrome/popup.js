@@ -39,7 +39,11 @@ async function updateUI() {
     counting = ` · ${t(timers?.active ? 'statusCounting' : 'statusPaused')}`;
   }
 
-  document.getElementById('statusText').textContent = t(response ? 'statusOnSap' : 'statusNotOnSap') + counting;
+  // A Fabasoft tab that still doesn't answer after the background tried to attach to it
+  const onFabasoft = !!response || isFabasoftUrl(currentTab?.url);
+  if (!response && onFabasoft && popupReady) counting = ` · ${t('statusNotConnected')}`;
+
+  document.getElementById('statusText').textContent = t(onFabasoft ? 'statusOnSap' : 'statusNotOnSap') + counting;
   document.getElementById('loadingIndicator').style.display = response?.isBusy ? 'block' : 'none';
 }
 

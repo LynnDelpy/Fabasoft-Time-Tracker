@@ -221,9 +221,13 @@ saveLeaderboardBtn.addEventListener('click', async () => {
 
 // Detection settings
 saveDetectionBtn.addEventListener('click', async () => {
-  await chrome.storage.local.set({
-    customSelectors: customSelectorsInput.value.split('\n').map(s => s.trim()).filter(s => s)
-  });
+  const customSelectors = customSelectorsInput.value.split('\n').map(s => s.trim()).filter(s => s);
+  const invalid = customSelectors.filter(s => !isValidSelector(s));
+  if (invalid.length) {
+    showMessage(t('msgInvalidSelectors', { list: invalid.join(', ') }), 'error');
+    return;
+  }
+  await chrome.storage.local.set({ customSelectors });
   showMessage(t('msgDetectionSaved'), 'success');
 });
 

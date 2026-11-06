@@ -216,6 +216,25 @@ chrome.runtime.onConnect.addListener((port) => {
   });
 });
 
+function getTabStatus(tabId) {
+  return chrome.tabs.sendMessage(tabId, { action: 'getStatus' }).catch(() => null);
+}
+
+// Time of the last attach attempt per tab, so a tab that can't take a script isn't retried
+// on every pass. A second copy in a tab that already runs one doesn't start (measured).
+const attachAttempts = new Map();
+
+async function attachContentScript(tabId) {
+  if (Date.now() - (attachAttempts.get(tabId) || 0) < 5000) return false;
+  attachAttempts.set(tabId, Date.now());
+  try {
+    await chrome.scripting.executeScript({ target: { tabId }, files: ['shared.js', 'content-script.js'] });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // Time only counts in the Fabasoft tab you are actually using: the active tab of the
 // last focused browser window, while that window or the page has focus or the popup is
 // open. Switching to another tab, window or app pauses the counters.
@@ -224,8 +243,13 @@ async function getFocusedStatus() {
     const win = await chrome.windows.getLastFocused();
     const [tab] = await chrome.tabs.query({ active: true, windowId: win.id });
     if (!tab) return { busy: false, active: false };
-    // Only Fabasoft pages answer: the content script runs nowhere else
-    const status = await chrome.tabs.sendMessage(tab.id, { action: 'getStatus' });
+    // Only Fabasoft pages answer: the content script runs nowhere else. A Fabasoft tab
+    // that doesn't answer gets a fresh content script, then we ask again.
+    let status = await getTabStatus(tab.id);
+    if (!status && isFabasoftUrl(tab.url) && (await attachContentScript(tab.id))) {
+      status = await getTabStatus(tab.id);
+    }
+    if (!status) return { busy: false, active: false };
     // The window focus the browser reports isn't reliable on every Linux desktop, so the
     // page's own focus and an open popup count as focused too
     const focused = win.focused || !!status?.hasFocus || win.id === popupWindowId;
@@ -264,7 +288,10 @@ function evaluate() {
 
 chrome.windows.onFocusChanged.addListener(() => evaluate());
 chrome.tabs.onActivated.addListener(() => evaluate());
-chrome.tabs.onRemoved.addListener(() => evaluate());
+chrome.tabs.onRemoved.addListener((tabId) => {
+  attachAttempts.delete(tabId);
+  evaluate();
+});
 chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   if (changeInfo.status || changeInfo.url) evaluate();
 });
@@ -273,17 +300,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 setInterval(evaluate, 2000);
 
 // Chrome doesn't add content scripts to tabs that were already open when the extension
-// was installed, updated or reloaded. Those tabs keep an orphaned script that can't
-// reach us anymore, so nothing would count until the tab is reloaded. On every start,
-// give each fully loaded Fabasoft tab that doesn't answer a fresh content script.
+// was installed, updated or reloaded: those keep an orphaned script that can't reach us,
+// so nothing would count until the tab is reloaded. On start, attach a fresh one to every
+// Fabasoft tab that doesn't answer, whatever its load status (Fabasoft's push iframe keeps
+// a tab "loading" forever).
 async function injectIntoOpenTabs() {
-  const tabs = await chrome.tabs.query({ url: FABASOFT_URL_PATTERNS, status: 'complete' });
+  const tabs = await chrome.tabs.query({ url: FABASOFT_URL_PATTERNS });
   for (const tab of tabs) {
-    try {
-      await chrome.tabs.sendMessage(tab.id, { action: 'getStatus' });
-    } catch (e) {
-      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['shared.js', 'content-script.js'] }).catch(() => {});
-    }
+    if (!(await getTabStatus(tab.id))) await attachContentScript(tab.id);
   }
   evaluate();
 }

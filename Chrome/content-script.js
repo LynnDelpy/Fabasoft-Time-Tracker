@@ -7,13 +7,10 @@ let audioElement = null;
 // falling back to the built-in default. Loaded from storage and kept in sync.
 let selectors = FABASOFT_SELECTORS;
 chrome.storage.local.get(['customSelectors']).then((data) => {
-  if (data.customSelectors && data.customSelectors.length) selectors = data.customSelectors;
+  selectors = pickSelectors(data.customSelectors);
 });
 chrome.storage.onChanged.addListener((changes) => {
-  if (changes.customSelectors) {
-    const next = changes.customSelectors.newValue;
-    selectors = next && next.length ? next : FABASOFT_SELECTORS;
-  }
+  if (changes.customSelectors) selectors = pickSelectors(changes.customSelectors.newValue);
 });
 
 // Rendered, not hidden via visibility and not fully transparent

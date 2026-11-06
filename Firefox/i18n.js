@@ -16,6 +16,7 @@ const TRANSLATIONS = {
     statusNotOnSap: 'Not on Fabasoft',
     statusCounting: 'counting',
     statusPaused: 'paused',
+    statusNotConnected: 'not connected, reload the tab',
     busyIndicatorVisible: '⚠️ Busy indicator visible',
     dailyStats: 'Daily Stats',
     last7Days: 'Last 7 days',
@@ -71,7 +72,8 @@ const TRANSLATIONS = {
     msgAllDeleted: 'All data has been deleted',
     msgSaved: 'Saved',
     msgLeaderboardSaved: 'Leaderboard settings saved',
-    msgDetectionSaved: 'Detection settings saved'
+    msgDetectionSaved: 'Detection settings saved',
+    msgInvalidSelectors: 'Not a valid CSS selector: {list}'
   },
   de: {
     appTitle: '⏱️ Fabasoft Zeit-Tracker',
@@ -88,6 +90,7 @@ const TRANSLATIONS = {
     statusNotOnSap: 'Nicht in Fabasoft',
     statusCounting: 'zählt',
     statusPaused: 'pausiert',
+    statusNotConnected: 'nicht verbunden, Tab neu laden',
     busyIndicatorVisible: '⚠️ Ladeanzeige sichtbar',
     dailyStats: 'Tägliche Statistik',
     last7Days: 'Letzte 7 Tage',
@@ -143,7 +146,8 @@ const TRANSLATIONS = {
     msgAllDeleted: 'Alle Daten wurden gelöscht',
     msgSaved: 'Gespeichert',
     msgLeaderboardSaved: 'Ranglisten-Einstellungen gespeichert',
-    msgDetectionSaved: 'Erkennungs-Einstellungen gespeichert'
+    msgDetectionSaved: 'Erkennungs-Einstellungen gespeichert',
+    msgInvalidSelectors: 'Kein gültiger CSS-Selektor: {list}'
   }
 };
 

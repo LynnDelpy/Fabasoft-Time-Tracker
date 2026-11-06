@@ -53,7 +53,7 @@ async function playNotificationSound() {
 
 browser.storage.local.get(['customUrls', 'customSelectors']).then((result) => {
   const urlPatterns = result.customUrls && result.customUrls.length ? result.customUrls : FABASOFT_URL_PATTERNS;
-  const selectors = result.customSelectors && result.customSelectors.length ? result.customSelectors : FABASOFT_SELECTORS;
+  const selectors = pickSelectors(result.customSelectors);
   if (!urlMatches(window.location.href, urlPatterns)) return;
 
   function checkAndNotify() {

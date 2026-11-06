@@ -225,9 +225,15 @@ saveLeaderboardBtn.addEventListener('click', async () => {
 
 // Detection settings
 saveDetectionBtn.addEventListener('click', async () => {
+  const customSelectors = customSelectorsInput.value.split('\n').map(s => s.trim()).filter(s => s);
+  const invalid = customSelectors.filter(s => !isValidSelector(s));
+  if (invalid.length) {
+    showMessage(t('msgInvalidSelectors', { list: invalid.join(', ') }), 'error');
+    return;
+  }
   await browser.storage.local.set({
     customUrls: customUrlsInput.value.split('\n').map(u => u.trim()).filter(u => u),
-    customSelectors: customSelectorsInput.value.split('\n').map(s => s.trim()).filter(s => s)
+    customSelectors
   });
   showMessage(t('msgDetectionSaved'), 'success');
 });
